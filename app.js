@@ -105,6 +105,8 @@ function init() {
     // Try to restore the latest draft silently.
     tryAutoRestore();
 
+    initializeTableLabels();
+
     setupDatabase();
 }
 
@@ -158,6 +160,7 @@ function handleFormReset() {
             ensureMinimumRows(section);
         });
         announce("Formular zurueckgesetzt.");
+        initializeTableLabels();
     }, 0);
 }
 
@@ -175,6 +178,7 @@ function handleLoadSample() {
         const payload = JSON.parse(template.innerHTML);
         populateForm(payload);
         announce("Musterdaten geladen.");
+        initializeTableLabels();
     } catch (error) {
         console.error(error);
         announce("Musterdaten konnten nicht geladen werden.", "error");
@@ -248,6 +252,7 @@ function handleLoadLocal() {
         highlightHistoryRow(null);
         populateForm(payload);
         announce("Gespeicherte Daten geladen.");
+        initializeTableLabels();
     } catch (error) {
         console.error(error);
         announce("Daten konnten nicht geladen werden.", "error");
@@ -396,6 +401,7 @@ function tryAutoRestore() {
         setEditingEntry(null);
         highlightHistoryRow(null);
         announce("Automatisch wiederhergestellt (lokaler Speicher).");
+        initializeTableLabels();
     } catch (error) {
         console.warn("Automatische Wiederherstellung nicht moeglich.", error);
     }
@@ -492,6 +498,10 @@ function populateSection(section, values) {
     clearRows(section);
     if (!values.length) {
         ensureMinimumRows(section);
+        const table = section.body.closest("table");
+        if (table) {
+            refreshTableLabels(table);
+        }
         return;
     }
     values.forEach(record => {
@@ -508,6 +518,10 @@ function populateSection(section, values) {
             }
         });
     });
+    const table = section.body.closest("table");
+    if (table) {
+        refreshTableLabels(table);
+    }
 }
 
 function ensureMinimumRows(section) {
@@ -525,7 +539,12 @@ function addRow(section) {
         throw new Error(`Template ${section.template.id} enthaelt keine Tabellenzeile.`);
     }
     section.body.appendChild(fragment);
-    return section.body.lastElementChild;
+    const appendedRow = section.body.lastElementChild;
+    const table = section.body.closest("table");
+    if (table && appendedRow) {
+        applyLabelsToRow(table, appendedRow);
+    }
+    return appendedRow;
 }
 
 function clearRows(section) {
@@ -534,6 +553,51 @@ function clearRows(section) {
 
 function findSectionForRow(row) {
     return repeatingSections.find(section => section.body.contains(row));
+}
+
+function initializeTableLabels() {
+    document.querySelectorAll("table").forEach(refreshTableLabels);
+}
+
+function refreshTableLabels(table) {
+    if (!table) {
+        return;
+    }
+    const headers = extractHeaderLabels(table);
+    table.querySelectorAll("tbody tr").forEach(row => applyLabelsToRow(table, row, headers));
+}
+
+function applyLabelsToRow(table, row, headers) {
+    if (!table || !row) {
+        return;
+    }
+    const headerLabels = headers || extractHeaderLabels(table);
+    const cells = Array.from(row.children);
+    cells.forEach((cell, index) => {
+        if (cell.tagName !== "TD") {
+            return;
+        }
+        const label = headerLabels[index] || cell.getAttribute("data-label") || "";
+        if (label) {
+            cell.setAttribute("data-label", label);
+        } else {
+            cell.removeAttribute("data-label");
+        }
+    });
+}
+
+function extractHeaderLabels(table) {
+    const headers = Array.from(table.querySelectorAll("thead th")).map(header =>
+        normalizeHeaderText(header.textContent)
+    );
+    return headers.filter(Boolean);
+}
+
+function normalizeHeaderText(text) {
+    if (!text) {
+        return "";
+    }
+    return text.replace(/\s+/g, " ").trim();
 }
 
 function buildFileName(dateValue) {
@@ -654,6 +718,11 @@ function renderHistory(entries) {
         row.append(dateCell, zoneCell, responsibleCell, createdCell, actionsCell);
         historyBody.appendChild(row);
     });
+
+    const table = historyBody.closest("table");
+    if (table) {
+        refreshTableLabels(table);
+    }
 }
 
 function renderStatistics(entries) {

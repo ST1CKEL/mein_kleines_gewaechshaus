@@ -485,6 +485,99 @@ input[type="checkbox"] {
     }
 }
 
+@media (max-width: 640px) {
+    body {
+        font-size: 15px;
+    }
+
+    .page-header {
+        padding: 1.5rem 1rem 1rem;
+    }
+
+    .actions {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.5rem;
+    }
+
+    button {
+        width: 100%;
+    }
+
+    main {
+        margin: 1rem;
+    }
+
+    section,
+    .supplementary {
+        padding: 1.1rem;
+    }
+
+    .table-scroll {
+        overflow-x: visible;
+    }
+
+    table {
+        min-width: 0;
+        border: 0;
+    }
+
+    thead {
+        display: none;
+    }
+
+    tbody {
+        display: grid;
+        gap: 1rem;
+    }
+
+    tbody tr {
+        display: grid;
+        gap: 0.75rem;
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 0.9rem;
+        background: var(--surface);
+        box-shadow: var(--shadow);
+    }
+
+    tbody th[scope="row"] {
+        display: block;
+        font-weight: 600;
+        margin: 0;
+        padding: 0;
+        color: var(--fg);
+    }
+
+    tbody td {
+        display: grid;
+        gap: 0.3rem;
+        padding: 0;
+        border: 0;
+    }
+
+    tbody td::before {
+        content: attr(data-label);
+        font-weight: 600;
+        color: var(--muted);
+        font-size: 0.9rem;
+    }
+
+    tbody td .dual-input {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.5rem;
+    }
+
+    .history-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .trend-item {
+        grid-template-columns: auto 1fr;
+    }
+}
+
 @media print {
     body {
         background: #fff;
