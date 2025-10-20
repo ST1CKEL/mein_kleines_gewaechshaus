@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mein kleines Gew&auml;chshaus &ndash; Tagesprotokoll</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header class="page-header">
+        <h1>Mein kleines Gew&auml;chshaus &ndash; Tagesprotokoll</h1>
+        <p class="intro">T&auml;gliche Kontrolle der Stabilit&auml;t von Klima, Bew&auml;sserung und Pflanzengesundheit.</p>
+        <div class="actions">
+            <button type="button" id="save-entry" class="accent">Eintrag speichern</button>
+            <button type="button" id="load-sample">Musterwerte laden</button>
+            <button type="button" id="save-local">Lokal speichern</button>
+            <button type="button" id="load-local">Aus lokalem Speicher laden</button>
+            <button type="button" id="export-json">Als JSON exportieren</button>
+            <button type="button" id="print-log">Formular drucken</button>
+            <button type="reset" form="greenhouse-log" class="ghost">Zur&uuml;cksetzen</button>
+        </div>
+    </header>
+
+    <main>
+        <form id="greenhouse-log">
+            <section>
+                <h2>Stammdaten</h2>
+                <div class="table-scroll">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Datum</th>
+                                <th>Gew&auml;chshaus / Zone</th>
+                                <th>Kultur (optional)</th>
+                                <th>Verantwortlich</th>
+                                <th>Schicht</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><input type="date" name="meta_date"></td>
+                                <td><input type="text" name="meta_zone" placeholder="z.&nbsp;B. GH-1 / Zone A"></td>
+                                <td><input type="text" name="meta_crop" placeholder="optional"></td>
+                                <td><input type="text" name="meta_responsible"></td>
+                                <td><input type="text" name="meta_shift" placeholder="Fr&uuml;h / Sp&auml;t / Nacht"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <fieldset>
+                    <legend>Sensor- &amp; Systemcheck</legend>
+                    <div class="checkbox-list">
+                        <label><input type="checkbox" name="sensor_visual_ok"> Sichtkontrolle Sensoren ok</label>
+                        <label><input type="checkbox" name="sensor_calibration_logged"> Letzte Kalibrierung dokumentiert</label>
+                        <label><input type="checkbox" name="sensor_time_checked"> Uhren/Zeitstempel gepr&uuml;ft</label>
+                        <label><input type="checkbox" name="sensor_alarms_reset"> Alarme zur&uuml;ckgesetzt / protokolliert</label>
+                    </div>
+                </fieldset>
+            </section>
+
+            <section>
+                <h2>1) Klima &amp; Luft</h2>
+                <p class="section-note">Ziel: stabile, nachvollziehbare Kurven &ndash; keine langen Phasen nahe Taupunkt, keine extremen Spr&uuml;nge.</p>
+                <div class="table-scroll">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Parameter</th>
+                                <th>Minimum</th>
+                                <th>Maximum</th>
+                                <th>Durchschnitt</th>
+                                <th>Uhrzeit(en) / Notiz</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <th scope="row">Innen-Temperatur (&deg;C)</th>
+                                <td><input type="number" step="0.1" name="climate_inside_temp_min"></td>
+                                <td><input type="number" step="0.1" name="climate_inside_temp_max"></td>
+                                <td><input type="number" step="0.1" name="climate_inside_temp_avg"></td>
+                                <td><textarea name="climate_inside_temp_note" rows="1" placeholder="z.&nbsp;B. Spitzen um 14:00 Uhr"></textarea></td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Au&szlig;en-Temperatur (&deg;C)</th>
+                                <td><input type="number" step="0.1" name="climate_outside_temp_min"></td>
+                                <td><input type="number" step="0.1" name="climate_outside_temp_max"></td>
+                                <td><input type="number" step="0.1" name="climate_outside_temp_avg"></td>
+                                <td><textarea name="climate_outside_temp_note" rows="1"></textarea></td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Rel. Luftfeuchte (%)</th>
+                                <td><input type="number" step="0.1" name="climate_rh_min"></td>
+                                <td><input type="number" step="0.1" name="climate_rh_max"></td>
+                                <td><input type="number" step="0.1" name="climate_rh_avg"></td>
+                                <td><textarea name="climate_rh_note" rows="1"></textarea></td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Taupunkt (&deg;C)</th>
+                                <td><input type="number" step="0.1" name="climate_dewpoint_min"></td>
+                                <td><input type="number" step="0.1" name="climate_dewpoint_max"></td>
+                                <td><input type="number" step="0.1" name="climate_dewpoint_avg"></td>
+                                <td><textarea name="climate_dewpoint_note" rows="1"></textarea></td>
+                            </tr>
+                            <tr>
+                                <th scope="row">VPD (kPa)</th>
+                                <td><input type="number" step="0.01" name="climate_vpd_min"></td>
+                                <td><input type="number" step="0.01" name="climate_vpd_max"></td>
+                                <td><input type="number" step="0.01" name="climate_vpd_avg"></td>
+                                <td><textarea name="climate_vpd_note" rows="1"></textarea></td>
+                            </tr>
+                            <tr>
+                                <th scope="row">CO&#8322; (ppm)</th>
+                                <td><input type="number" step="1" name="climate_co2_min"></td>
+                                <td><input type="number" step="1" name="climate_co2_max"></td>
+                                <td><input type="number" step="1" name="climate_co2_avg"></td>
+                                <td>
+                                    <div class="note-with-suffix">
+                                        <textarea name="climate_co2_note" rows="1" placeholder="z.&nbsp;B. Spitzen w&auml;hrend L&uuml;ftungsstopp"></textarea>
+                                        <label>Dauer &gt;1000 ppm (min): <input type="number" min="0" step="1" name="climate_co21000_duration"></label>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <fieldset>
+                    <legend>Luftbewegung &amp; L&uuml;ftung</legend>
+                    <div class="checkbox-list">
+                        <label><input type="checkbox" name="air_circulation_on"> Umluftl&uuml;fter an / Zonen ohne tote Ecken</label>
+                        <label><input type="checkbox" name="air_vents_ok"> L&uuml;ftung/Auf-/Zu-Fenster funktionieren</label>
+                    </div>
+                    <label class="stacked">
+                        Kurznotiz
+                        <textarea name="air_notes" rows="2"></textarea>
+                    </label>
+                </fieldset>
+            </section>
+
+            <section>
+                <h2>2) Licht</h2>
+                <p class="section-note">Konstante, gleichm&auml;&szlig;ige Lichtverteilung. Pl&ouml;tzlich Einbr&uuml;che oder Schattenereignisse notieren.</p>
+                <div class="table-scroll">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Kennzahl</th>
+                                <th>Wert</th>
+                                <th>Einheit</th>
+                                <th>Notiz</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <th scope="row">Tageslicht-Integral (DLI)</th>
+                                <td><input type="number" step="0.1" name="light_dli_value"></td>
+                                <td><input type="text" name="light_dli_unit" value="mol&middot;m&#8315;&sup2;&middot;d&#8315;&sup1;" readonly></td>
+                                <td><textarea name="light_dli_note" rows="1"></textarea></td>
+                            </tr>
+                            <tr>
+                                <th scope="row">PPFD &ndash; Tagesmittel</th>
+                                <td><input type="number" step="1" name="light_ppfd_value"></td>
+                                <td><input type="text" name="light_ppfd_unit" value="&micro;mol&middot;m&#8315;&sup2;&middot;s&#8315;&sup1;" readonly></td>
+                                <td><textarea name="light_ppfd_note" rows="1"></textarea></td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Beleuchtungsstunden (k&uuml;nstlich)</th>
+                                <td><input type="number" step="0.1" name="light_hours_value"></td>
+                                <td><input type="text" name="light_hours_unit" value="h" readonly></td>
+                                <td><textarea name="light_hours_note" rows="1"></textarea></td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Schatten-/Lichtausfall-Ereignisse (Anzahl)</th>
+                                <td><input type="number" step="1" name="light_outage_count"></td>
+                                <td><input type="text" name="light_outage_unit" value="#" readonly></td>
+                                <td><textarea name="light_outage_note" rows="1" placeholder="Uhrzeit/Zone"></textarea></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section>
+                <h2>3) Bew&auml;sserung &amp; Substrat</h2>
+                <p class="section-note">Stabilit&auml;t schl&auml;gt Perfektion. Auf wiederkehrende Muster achten (zu nass/zu trocken).</p>
+                <div class="table-scroll">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Position/Beet</th>
+                                <th>Zyklen (Anz.)</th>
+                                <th>Gesamtmenge (L)</th>
+                                <th>Start/Ende (Uhrzeit)</th>
+                                <th>Drainage (%)</th>
+                                <th>Substratfeuchte morgens</th>
+                                <th>Substratfeuchte abends</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="irrigation-body">
+                        </tbody>
+                    </table>
+                </div>
+                <button type="button" class="ghost" data-action="add-irrigation">Position hinzuf&uuml;gen</button>
+
+                <h3>N&auml;hrl&ouml;sung (falls genutzt)</h3>
+                <div class="table-scroll">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Probe</th>
+                                <th>pH</th>
+                                <th>EC (mS/cm)</th>
+                                <th>Temp (&deg;C)</th>
+                                <th>Notizen</th>
+                            </tr>
+                        </thead>
+                        <tbody id="nutrient-body">
+                        </tbody>
+                    </table>
+                </div>
+                <button type="button" class="ghost" data-action="add-nutrient">Probe hinzuf&uuml;gen</button>
+            </section>
+
+            <section>
+                <h2>4) Pflanzengesundheit</h2>
+                <fieldset>
+                    <legend>Sichtkontrolle</legend>
+                    <div class="checkbox-list">
+                        <label><input type="checkbox" name="health_growth_ok"> Wuchs/Triebspitzen unauff&auml;llig</label>
+                        <label><input type="checkbox" name="health_discoloration"> Verf&auml;rbungen / Nekrosen</label>
+                        <label><input type="checkbox" name="health_heat_damage"> Sonnenbrand / Hitzesch&auml;den</label>
+                        <label><input type="checkbox" name="health_leaf_wetness"> Blattnassdauer/Kondens beobachtet</label>
+                    </div>
+                </fieldset>
+
+                <fieldset>
+                    <legend>Sch&auml;dlingsmonitoring</legend>
+                    <div class="inline-fields">
+                        <label>Anzahl Gelb-/Blaufallen
+                            <input type="number" min="0" step="1" name="pest_traps_count">
+                        </label>
+                        <label>Z&auml;hlintervall
+                            <select name="pest_trap_interval">
+                                <option value="">Bitte w&auml;hlen</option>
+                                <option value="taeglich">t&auml;glich</option>
+                                <option value="woechentlich">w&ouml;chentlich</option>
+                            </select>
+                        </label>
+                    </div>
+                    <div class="table-scroll">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Fallennr.</th>
+                                    <th>Datum</th>
+                                    <th>Insektenzahl gesamt</th>
+                                    <th>Auff&auml;llige Arten</th>
+                                    <th>Notiz</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody id="pest-body">
+                            </tbody>
+                        </table>
+                    </div>
+                    <button type="button" class="ghost" data-action="add-pest">Falle hinzuf&uuml;gen</button>
+                </fieldset>
+
+                <label class="stacked">
+                    Krankheitsdruck (z. B. Blattflecken, Mehltau) &ndash; Beschreibung &amp; Zone
+                    <textarea name="disease_pressure" rows="3"></textarea>
+                </label>
+            </section>
+
+            <section>
+                <h2>5) Technik &amp; Betrieb</h2>
+                <div class="checkbox-grid">
+                    <label><input type="checkbox" name="tech_power_ok"> Stromversorgung stabil</label>
+                    <label><input type="checkbox" name="tech_motors_ok"> Ventilatoren / Pumpen ok</label>
+                    <label><input type="checkbox" name="tech_filters_clean"> Filter/Netze gereinigt</label>
+                    <label><input type="checkbox" name="tech_glass_clean"> Scheiben/Abdeckungen sauber</label>
+                    <label><input type="checkbox" name="tech_co2_safe"> CO&#8322;-Versorgung sicher (falls vorhanden)</label>
+                </div>
+                <label class="stacked">
+                    Notizen
+                    <textarea name="tech_notes" rows="3"></textarea>
+                </label>
+            </section>
+
+            <section>
+                <h2>6) Alarme &amp; Ereignisse</h2>
+                <div class="table-scroll">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Uhrzeit</th>
+                                <th>Ereignis</th>
+                                <th>Dauer</th>
+                                <th>Betroffene Zone</th>
+                                <th>Ma&szlig;nahme</th>
+                                <th>Ergebnis</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="incident-body">
+                        </tbody>
+                    </table>
+                </div>
+                <button type="button" class="ghost" data-action="add-incident">Ereignis hinzuf&uuml;gen</button>
+            </section>
+
+            <section>
+                <h2>7) Ma&szlig;nahmen &amp; &Auml;nderungen heute</h2>
+                <div class="multiline-group">
+                    <label class="stacked">
+                        Klima-Setpoints / L&uuml;ftung
+                        <textarea name="actions_climate" rows="2"></textarea>
+                    </label>
+                    <label class="stacked">
+                        Bew&auml;sserung / N&auml;hrl&ouml;sung
+                        <textarea name="actions_irrigation" rows="2"></textarea>
+                    </label>
+                    <label class="stacked">
+                        Hygiene / Pr&auml;vention
+                        <textarea name="actions_hygiene" rows="2"></textarea>
+                    </label>
+                    <label class="stacked">
+                        To-do f&uuml;r morgen
+                        <textarea name="actions_todo" rows="2"></textarea>
+                    </label>
+                </div>
+
+                <div class="inline-fields">
+                    <label>Unterschrift / K&uuml;rzel
+                        <input type="text" name="signature">
+                    </label>
+                    <label>Uhrzeit Abschluss
+                        <input type="time" name="closing_time">
+                    </label>
+                </div>
+            </section>
+
+            <section id="trend-section">
+                <h2>Aktueller Trend</h2>
+                <p class="section-note">
+                    Analysiert automatisch alle gespeicherten Eintr&auml;ge und zeigt, ob sich Werte im Vergleich zum vorherigen Tag erh&ouml;ht, verringert oder stabil geblieben sind.
+                </p>
+                <div id="trend-content" class="stats-grid">
+                    <p class="empty-state">Noch keine Trends verf&uuml;gbar. Zuerst mindestens zwei Tagesprotokolle speichern.</p>
+                </div>
+            </section>
+        </form>
+
+        <section id="history-section" class="supplementary">
+            <h2>Tageslog</h2>
+            <p class="section-note">Gespeicherte Tagesprotokolle bleiben lokal im Browser erhalten. Eintr&auml;ge lassen sich nachtr&auml;glich bearbeiten oder l&ouml;schen.</p>
+            <div class="table-scroll">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Datum</th>
+                            <th>Zone</th>
+                            <th>Verantwortlich</th>
+                            <th>Gespeichert am</th>
+                            <th>Aktionen</th>
+                        </tr>
+                    </thead>
+                    <tbody id="history-body">
+                    </tbody>
+                </table>
+            </div>
+            <p id="history-empty" class="empty-state">Noch keine Eintr&auml;ge gespeichert.</p>
+        </section>
+
+        <section id="statistics-section" class="supplementary">
+            <h2>Statistik ge&auml;nderter Werte</h2>
+            <p class="section-note">Vergleicht aufeinanderfolgende Eintr&auml;ge und z&auml;hlt ver&auml;nderte Felder.</p>
+            <div id="statistics-content" class="stats-grid">
+                <p class="empty-state">Mindestens zwei Eintr&auml;ge erforderlich.</p>
+            </div>
+        </section>
+    </main>
+
+    <template id="irrigation-row-template">
+        <tr>
+            <td><input type="text" name="irrigation_position[]" placeholder="Zone / Beet"></td>
+            <td><input type="number" min="0" step="1" name="irrigation_cycles[]"></td>
+            <td><input type="number" min="0" step="0.1" name="irrigation_volume[]"></td>
+            <td class="dual-input">
+                <input type="time" name="irrigation_start[]">
+                <span>&ndash;</span>
+                <input type="time" name="irrigation_end[]">
+            </td>
+            <td><input type="number" min="0" max="100" step="1" name="irrigation_drainage[]"></td>
+            <td><input type="text" name="irrigation_morning[]" placeholder="z.&nbsp;B. 45%"></td>
+            <td><input type="text" name="irrigation_evening[]" placeholder="z.&nbsp;B. 55%"></td>
+            <td><button type="button" class="icon" data-action="remove-row" aria-label="Zeile entfernen">&times;</button></td>
+        </tr>
+    </template>
+
+    <template id="nutrient-row-template">
+        <tr>
+            <td>
+                <select name="nutrient_sample[]">
+                    <option value="">Bitte w&auml;hlen</option>
+                    <option value="zufuhr">Zufuhr</option>
+                    <option value="drain">Drain/Abfluss</option>
+                    <option value="differenz">Differenz (Drain - Zufuhr)</option>
+                </select>
+            </td>
+            <td><input type="number" step="0.01" name="nutrient_ph[]"></td>
+            <td><input type="number" step="0.01" name="nutrient_ec[]"></td>
+            <td><input type="number" step="0.1" name="nutrient_temp[]"></td>
+            <td><textarea name="nutrient_note[]" rows="1"></textarea></td>
+            <td><button type="button" class="icon" data-action="remove-row" aria-label="Zeile entfernen">&times;</button></td>
+        </tr>
+    </template>
+
+    <template id="pest-row-template">
+        <tr>
+            <td><input type="text" name="pest_trap_number[]" placeholder="z.&nbsp;B. G1"></td>
+            <td><input type="date" name="pest_date[]"></td>
+            <td><input type="number" min="0" step="1" name="pest_count[]"></td>
+            <td><input type="text" name="pest_species[]" placeholder="optional"></td>
+            <td><textarea name="pest_note[]" rows="1"></textarea></td>
+            <td><button type="button" class="icon" data-action="remove-row" aria-label="Zeile entfernen">&times;</button></td>
+        </tr>
+    </template>
+
+    <template id="incident-row-template">
+        <tr>
+            <td><input type="time" name="incident_time[]"></td>
+            <td><input type="text" name="incident_event[]"></td>
+            <td><input type="text" name="incident_duration[]" placeholder="min / h"></td>
+            <td><input type="text" name="incident_zone[]"></td>
+            <td><textarea name="incident_action[]" rows="1"></textarea></td>
+            <td><textarea name="incident_result[]" rows="1"></textarea></td>
+            <td><button type="button" class="icon" data-action="remove-row" aria-label="Zeile entfernen">&times;</button></td>
+        </tr>
+    </template>
+
+    <template id="sample-data">
+        {
+            "meta_date": "2025-04-18",
+            "meta_zone": "GH-2 Zone B",
+            "meta_crop": "Tomaten (Versuch)",
+            "meta_responsible": "J. Beispiel",
+            "meta_shift": "Frueh",
+            "sensor_visual_ok": true,
+            "sensor_calibration_logged": true,
+            "sensor_time_checked": true,
+            "air_circulation_on": true,
+            "climate_inside_temp_min": 20.4,
+            "climate_inside_temp_max": 27.1,
+            "climate_inside_temp_avg": 23.8,
+            "climate_inside_temp_note": "Spitzen gegen 15:00 Uhr, Lueftung angepasst",
+            "climate_co21000_duration": 12,
+            "light_dli_value": 19.5,
+            "light_ppfd_value": 480,
+            "light_hours_value": 17.5,
+            "light_outage_count": 0,
+            "actions_todo": "Naehrloesung pH-Sensor kalibrieren",
+            "signature": "JB",
+            "closing_time": "16:45"
+        }
+    </template>
+
+    <script src="app.js" defer></script>
+</body>
+</html>
